@@ -89,12 +89,15 @@ function deleteIssue(event, context) {
 //
 // {"issueKey" : 'AIRS-774', 'file': {'url':"http://s3url.com", 'name': 'random.jpg'}}
 function addAttachment(event, context) {
-    var file = fs.createWriteStream(event.file.name);
+    var file = fs.createWriteStream("/tmp/"+event.file.name);
     var request = http.get(event.file.url, function(response) {
         var stream = response.pipe(file);
         stream.on('finish', function(){
+            console.log("File Path" + file.path);
+            console.log(file);
             jira.issue.addAttachment( { issueKey: event.issueKey, filename: file.path }, function(error, attachment) {
                 console.log(attachment);
+                console.log(error);
                 context.done(null, attachment);
             });
         });
